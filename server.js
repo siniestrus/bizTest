@@ -75,7 +75,7 @@ app.use(function (req, res) {
 });
 var server = http.createServer(app);
 server.listen(process.env.OPENSHIFT_NODEJS_PORT || process.env.OPENSHIFT_INTERNAL_PORT || process.env.PORT || 8080, process.env.OPENSHIFT_NODEJS_IP || process.env.OPENSHIFT_INTERNAL_IP || '0.0.0.0', function () {
-    console.log('Servidor escuchando en puerto 8080. Fecha: n/a');
+    console.log('Servidor escuchando en puerto 8080. Fecha: n/a' + (new Date()));
 });
 wsServer = new WebSocketServer({
     httpServer: server,
