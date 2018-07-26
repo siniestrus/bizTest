@@ -18,9 +18,6 @@ admin.initializeApp({
 app.use(cors())
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
-app.use(function (req, res) {
-    res.status(404).send({ url: req.originalUrl + ' URI no encontrada' })
-});
 app.post('/enviarNotificacion', function (req, res) {
     var empresaId = req.body.empresaId;
     //var token = req.body.token;
@@ -73,7 +70,9 @@ app.post('/enviarNotificacion', function (req, res) {
         }
     });
 });
-
+app.use(function (req, res) {
+    res.status(404).send({ url: req.originalUrl + ' URI no encontrada' })
+});
 var server = http.createServer(app);
 server.listen(process.env.OPENSHIFT_NODEJS_PORT || process.env.OPENSHIFT_INTERNAL_PORT || process.env.PORT || 8080, process.env.OPENSHIFT_NODEJS_IP || process.env.OPENSHIFT_INTERNAL_IP || '0.0.0.0', function () {
     console.log('Servidor escuchando en puerto 8080. Fecha: ' + (new Date()));
@@ -123,40 +122,5 @@ wsServer.on('request', function (request) {
 function originIsAllowed(origin) {
     // put logic here to detect whether the specified origin is allowed. 
     return true;
-}
-function sendNotification(token) {
-    console.log(token);
-    const request = require('request-promise');
-    var objNotificacion = {
-        "notification": {
-            "title": "BizMate",
-            "body": "Tiene notificaciones pendientes.",
-            "sound": "default",
-            "icon": "my_notification_icon",
-            "color": "#4fd2c2",
-            "click_action": "FCM_PLUGIN_ACTIVITY",
-            "tag": "BizMateNotification"
-        },
-        "data": {},
-        "to": token,
-        "priority": "high",
-        "collapse_key": "BizMateNotification"
-    };
-    var options = {
-        uri: "https://fcm.googleapis.com/fcm/send",
-        method: "POST",
-        json: true,   // <--Very important!!!
-        body: objNotificacion,
-        headers: {
-            'Content-Type': 'application/json', 'Authorization': 'key=AAAAnHBDU3M:APA91bGMbH9eC623D6me16qbA4lS5IiLaaSyxhXg_NgwV8zEJFLhDpvz7wlRUKq2W2eNzbs7a3wweErsGkFeAfwf6sMoxIi4AUkdmQ0BE2o1jmAHgwUkHwSjAPDiuQk1DOK0F8nlDj-g'
-        }
-    };
-    return request(options).then(function (response) {
-        return console.log('exito');
-    })
-   .catch(function (err) {
-       console.log('error');
-       return console.log(err);
-   });
 }
 
