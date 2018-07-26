@@ -7,6 +7,7 @@ var cors = require('cors');
 var WebSocketServer = require('websocket').server;
 var http = require('http');
 var clients = [];
+var abc = {};
 admin.initializeApp({
     credential: admin.credential.cert({
         projectId: 'bizmatetest-62c5b',
@@ -101,8 +102,8 @@ wsServer.on('request', function (request) {
         console.log((new Date()) + ' Connection from origin ' + request.origin + ' rejected.');
         return;
     }
-    var connection = request.accept('echo-protocol', request.origin);
-    clients.push(connection);
+    var connection = request.accept('echo-protocol', request.origin);    
+    clients.push(connection);    
     console.log('***Nuevo cliente conectado. Fecha: ' + (new Date()));
     connection.on('message', function (message) {
         var index = clients.indexOf(connection);
@@ -110,8 +111,10 @@ wsServer.on('request', function (request) {
             var signal;
             try { signal = JSON.parse(message.utf8Data); } catch (e) { console.log(e); };
             switch (signal.funcion) {
-                case 'Bienvenida':
+                case 'Welcome':
                     console.log('Usuario conectado: ' + signal.datos);
+                    connection.empresaId = signal.datos;                    
+                    admin.database().ref('TOKENS/' + signal.datos + '/fechaConexion').set(admin.database.ServerValue.TIMESTAMP);
                     break;
             }
         }
@@ -121,6 +124,7 @@ wsServer.on('request', function (request) {
         }
     });
     connection.on('close', function (reasonCode, description) {
+        admin.database().ref('TOKENS/' + connection.empresaId + '/fechaConexion').remove();
         var i = clients.indexOf(connection);
         clients.splice(i, 1);
         console.log('>>>Cliente desconectado. Fecha: ' + (new Date()));
