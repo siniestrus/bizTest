@@ -25,7 +25,8 @@ var allowCrossDomain = function (req, res, next) {
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 app.use(allowCrossDomain);
-app.post('/enviarNotificacion', function (req, res) {
+app.options('*', cors());
+app.post('/enviarNotificacion', cors(), function (req, res) {
     var empresaId = req.body.empresaId;
     //var token = req.body.token;
     //var geo = req.body.geo;
