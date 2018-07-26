@@ -15,20 +15,14 @@ admin.initializeApp({
     }),
     databaseURL: 'https://bizmatetest-62c5b.firebaseio.com'
 });
-app.use(cors({ origin: '*' }));
+app.use(cors());
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
-app.use(function (req, res) {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    // Request methods you wish to allow
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-    // Request headers you wish to allow
-    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-    // Set to true if you need the website to include cookies in the requests sent
-    // to the API (e.g. in case you use sessions)
-    res.setHeader('Access-Control-Allow-Credentials', true);    
-});
 app.post('/enviarNotificacion', function (req, res) {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE'); // If needed
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type'); // If needed
+    res.setHeader('Access-Control-Allow-Credentials', true); // If needed
     var empresaId = req.body.empresaId;
     //var token = req.body.token;
     //var geo = req.body.geo;
@@ -85,7 +79,7 @@ app.use(function (req, res) {
 });
 var server = http.createServer(app);
 server.listen(process.env.OPENSHIFT_NODEJS_PORT || process.env.OPENSHIFT_INTERNAL_PORT || process.env.PORT || 8080, process.env.OPENSHIFT_NODEJS_IP || process.env.OPENSHIFT_INTERNAL_IP || '0.0.0.0', function () {
-    console.log('Servidor escuchando en puerto 8080. Fecha: ' + (new Date()));
+    console.log('Servidor escuchando en puerto 8080. con fecha: ' + (new Date()));
 });
 wsServer = new WebSocketServer({
     httpServer: server,
