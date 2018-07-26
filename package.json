@@ -1,0 +1,19 @@
+{
+  "name": "bizTest",
+  "version": "1.0.0",
+  "description": "bizTest",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": "Arturo Izquierdo",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "cors": "^2.8.4",
+    "express": "^4.16.3",
+    "firebase-admin": "^5.12.1",
+    "request-promise": "^4.2.2",
+    "websocket": "^1.0.26"
+  }
+}
