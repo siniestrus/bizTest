@@ -66,15 +66,17 @@ app.post('/enviarNotificacion', cors(), function (req, res) {
                     return console.log('exito');
                 })
                .catch(function (err) {
-                   console.log('error');
-                   return console.log(err);
+                   res.send(err);
+                   return console.log('error');
                });
             }
             else {
+                res.send('no se envia notificacion');
                 return console.log('No se envía notificación');
             }
         }
         else {
+            res.send('no info de la empresa');
             return console.log('no info de la empresa');
         }
     });
@@ -102,8 +104,8 @@ wsServer.on('request', function (request) {
         console.log((new Date()) + ' Connection from origin ' + request.origin + ' rejected.');
         return;
     }
-    var connection = request.accept('echo-protocol', request.origin);    
-    clients.push(connection);    
+    var connection = request.accept('echo-protocol', request.origin);
+    clients.push(connection);
     console.log('***Nuevo cliente conectado. Fecha: ' + (new Date()));
     connection.on('message', function (message) {
         var index = clients.indexOf(connection);
@@ -113,7 +115,7 @@ wsServer.on('request', function (request) {
             switch (signal.funcion) {
                 case 'Welcome':
                     console.log('Usuario conectado: ' + signal.datos);
-                    connection.empresaId = signal.datos;                    
+                    connection.empresaId = signal.datos;
                     admin.database().ref('TOKENS/' + signal.datos + '/fechaConexion').set(admin.database.ServerValue.TIMESTAMP);
                     break;
             }
