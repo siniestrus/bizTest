@@ -132,10 +132,11 @@ wsServer.on('request', function (request) {
         console.log('>>>Cliente desconectado. Fecha: ' + (new Date()));
         console.log('clientes conectados:' + clients.length + " id:" + i);
     });
+    setTimeout(function timeout() {
+        connection.sendUTF(Date.now());
+    }, 500);
 });
-setTimeout(function timeout() {
-    wsServer.send(Date.now());
-}, 500);
+
 //wsServer.on('close', function (val) {
 //    console.log('se cierra');
 //    console.log(val);
