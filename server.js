@@ -133,6 +133,10 @@ wsServer.on('request', function (request) {
         console.log('clientes conectados:' + clients.length + " id:" + i);
     });
 });
+wsServer.on('close', function (val) {
+    console.log('se cierra');
+    console.log(val);
+});
 function originIsAllowed(origin) {
     // put logic here to detect whether the specified origin is allowed. 
     return true;
