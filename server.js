@@ -97,6 +97,17 @@ wsServer = new WebSocketServer({
     // to accept it. 
     autoAcceptConnections: false
 });
+function noop() { }
+
+function heartbeat() {
+    this.isAlive = true;
+}
+
+//wss.on('connection', function connection(ws) {
+//    ws.isAlive = true;
+//    ws.on('pong', heartbeat);
+//});
+
 wsServer.on('request', function (request) {
     if (!originIsAllowed(request.origin)) {
         // Make sure we only accept requests from an allowed origin 
@@ -132,9 +143,28 @@ wsServer.on('request', function (request) {
         console.log('>>>Cliente desconectado. Fecha: ' + (new Date()));
         console.log('clientes conectados:' + clients.length + " id:" + i);
     });
-    setTimeout(function timeout() {
-        connection.sendUTF(Date.now());
-    }, 500);
+
+    connection.isAlive = true;
+    connection.on('pong', heartbeat);
+
+
+    const interval = setInterval(function ping() {
+        wsServer.clients.forEach(function each(ws) {
+            if (ws.isAlive === false)
+            {
+                console.log('se termina');
+                return ws.terminate();
+            }
+
+               
+
+            ws.isAlive = false;
+            ws.ping(noop);
+        });
+    }, 3000);
+    //setTimeout(function timeout() {
+    //    connection.sendUTF(Date.now());
+    //}, 500);
 });
 
 //wsServer.on('close', function (val) {
