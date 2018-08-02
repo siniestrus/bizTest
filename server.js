@@ -128,6 +128,7 @@ wsServer.on('request', function (request) {
                     console.log('Usuario conectado: ' + signal.datos);
                     connection.empresaId = signal.datos;
                     admin.database().ref('TOKENS/' + signal.datos + '/fechaConexion').set(admin.database.ServerValue.TIMESTAMP);
+                    //connection.close();
                     break;
             }
         }
@@ -153,7 +154,7 @@ wsServer.on('request', function (request) {
             if (ws.isAlive === false)
             {
                 console.log('se termina');
-                return ws.terminate();
+                return ws().close();
             }
 
                
