@@ -97,16 +97,16 @@ wsServer = new WebSocketServer({
     // to accept it. 
     autoAcceptConnections: false
 });
-function noop() { }
-
-function heartbeat() {
-    this.isAlive = true;
-}
 
 //wss.on('connection', function connection(ws) {
 //    ws.isAlive = true;
 //    ws.on('pong', heartbeat);
 //});
+function noop() { }
+
+function heartbeat() {
+    this.isAlive = true;
+}
 
 wsServer.on('request', function (request) {
     if (!originIsAllowed(request.origin)) {
@@ -116,6 +116,8 @@ wsServer.on('request', function (request) {
         return;
     }
     var connection = request.accept('echo-protocol', request.origin);
+    connection.isAlive = true;
+    connection.on('pong', heartbeat);
     clients.push(connection);
     console.log('***Nuevo cliente conectado. Fecha: ' + (new Date()));
     connection.on('message', function (message) {
@@ -128,7 +130,6 @@ wsServer.on('request', function (request) {
                     console.log('Usuario conectado: ' + signal.datos);
                     connection.empresaId = signal.datos;
                     admin.database().ref('TOKENS/' + signal.datos + '/fechaConexion').set(admin.database.ServerValue.TIMESTAMP);
-                    //connection.close();
                     break;
             }
         }
@@ -144,34 +145,29 @@ wsServer.on('request', function (request) {
         console.log('>>>Cliente desconectado. Fecha: ' + (new Date()));
         console.log('clientes conectados:' + clients.length + " id:" + i);
     });
+    //var x = setInterval(function ping() {
+    //    if (connection.isAlive === false) {
+    //        console.log('se termina');
+    //        clearInterval(x);
+    //        return connection.socket.destroy();
 
-    connection.isAlive = true;
-    connection.on('pong', heartbeat);
+    //    }
+    //    connection.isAlive = false;
+    //    connection.ping(noop);
+    //}, 3000);
 
-
-    const interval = setInterval(function ping() {
-        clients.forEach(function each(ws) {
-            if (ws.isAlive === false)
-            {
-                console.log('se termina');
-                return ws().close();
-            }
-
-               
-
-            ws.isAlive = false;
-            ws.ping(noop);
-        });
-    }, 3000);
-    //setTimeout(function timeout() {
-    //    connection.sendUTF(Date.now());
-    //}, 500);
 });
+setInterval(function ping() {
+    clients.forEach(function each(ws) {
+        if (ws.isAlive === false) {
+            console.log('se termina');
+            return ws.socket.destroy();
+        }
+        ws.isAlive = false;
+        ws.ping(noop);
+    });
+}, 2000);
 
-//wsServer.on('close', function (val) {
-//    console.log('se cierra');
-//    console.log(val);
-//});
 function originIsAllowed(origin) {
     // put logic here to detect whether the specified origin is allowed. 
     return true;
