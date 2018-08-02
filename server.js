@@ -149,7 +149,7 @@ wsServer.on('request', function (request) {
 
 
     const interval = setInterval(function ping() {
-        wsServer.clients.forEach(function each(ws) {
+        clients.forEach(function each(ws) {
             if (ws.isAlive === false)
             {
                 console.log('se termina');
